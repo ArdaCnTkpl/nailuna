@@ -8,9 +8,6 @@ export default function SignInPage() {
       <div className="w-full max-w-md">
         <SignIn
           appearance={{
-            layout: {
-              showOptionalClerkBadge: false,
-            },
             variables: {
               colorPrimary: "#c6718a",
               colorBackground: "var(--bg-card)",

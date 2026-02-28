@@ -8,9 +8,6 @@ export default function SignUpPage() {
       <div className="w-full max-w-md">
         <SignUp
           appearance={{
-            layout: {
-              showOptionalClerkBadge: false,
-            },
             variables: {
               colorPrimary: "#c6718a",
               colorBackground: "var(--bg-card)",
