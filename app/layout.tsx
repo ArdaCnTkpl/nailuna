@@ -20,8 +20,8 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Tırnak AI Asistanı",
-  description: "Fotoğraf yükle, tırnağını tarif et, AI ile tasarla.",
+  title: "Nailuna",
+  description: "Upload your nail photo, describe your design, and let AI create your dream nails.",
 };
 
 export default function RootLayout({

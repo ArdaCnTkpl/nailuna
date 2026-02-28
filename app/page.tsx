@@ -95,10 +95,6 @@ export default function Home() {
   const { t } = useLanguage();
   const pricingSliderRef = useRef<HTMLDivElement>(null);
   const [pricingSlideIndex, setPricingSlideIndex] = useState(0);
-  const [billingPeriod, setBillingPeriod] = useState<"monthly" | "yearly">(
-    "yearly",
-  );
-  const isYearly = billingPeriod === "yearly";
   const howSliderRef = useRef<HTMLDivElement | null>(null);
   const [howSlideIndex, setHowSlideIndex] = useState(0);
 
@@ -313,37 +309,6 @@ export default function Home() {
               {t("home.pricing.subtitle")}
             </p>
             <div className="mx-auto mt-5 h-px w-16 bg-gradient-to-r from-transparent via-[var(--primary)]/40 to-transparent sm:mt-6" aria-hidden />
-
-            {/* Billing toggle – mobilde daha büyük dokunma alanı */}
-            <div className="mt-6 flex flex-col items-center gap-4 sm:mt-8 sm:flex-row sm:justify-center sm:gap-3">
-              <div className="inline-flex w-full max-w-[240px] items-center justify-center rounded-2xl border border-[var(--border)] bg-[var(--bg)] p-1.5 shadow-[var(--shadow-sm)] sm:max-w-none sm:rounded-full sm:px-1 sm:py-1">
-                <button
-                  type="button"
-                  onClick={() => setBillingPeriod("monthly")}
-                  className={`flex-1 rounded-xl py-3 text-sm font-medium transition sm:rounded-full sm:px-3 sm:py-1 ${
-                    !isYearly
-                      ? "bg-[var(--primary)] text-[#fdf5f8] shadow-sm"
-                      : "text-[var(--text-muted)] hover:text-[var(--primary)]"
-                  }`}
-                  >
-                  {t("home.pricing.toggleMonthly")}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setBillingPeriod("yearly")}
-                  className={`flex-1 rounded-xl py-3 text-sm font-medium transition sm:rounded-full sm:px-3 sm:py-1 ${
-                    isYearly
-                      ? "bg-[var(--primary)] text-[#fdf5f8] shadow-sm"
-                      : "text-[var(--text-muted)] hover:text-[var(--primary)]"
-                  }`}
-                  >
-                  {t("home.pricing.toggleYearly")}
-                </button>
-              </div>
-              <span className="inline-flex items-center rounded-full border border-[var(--border)] bg-[var(--primary-light)] px-3 py-1.5 text-xs font-semibold tracking-wide text-[var(--primary)]">
-                {t("home.pricing.saveBadge")}
-              </span>
-            </div>
 
             {/* Cards – mobilde slayt (tek kart görünür, kaydırma + noktalar) */}
             <div
