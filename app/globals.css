@@ -258,3 +258,14 @@ body {
     padding-right: env(safe-area-inset-right);
   }
 }
+
+/* Clerk sign-in/sign-up: "Secured by Clerk" ve development mode footer'ını gizle */
+.cl-footer {
+  display: none !important;
+}
+
+/* Clerk UserButton popover: "Secured by Development mode" footer'ını gizle */
+.cl-userButtonPopoverFooter,
+[class*="userButtonPopoverFooter"] {
+  display: none !important;
+}

@@ -1,6 +1,7 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
-// Ürün sayfasını (ve ileride ekleyeceğin dashboard vb.) login zorunlu yapalım
+// Sadece /urun korumalı. Anasayfa (/), /sign-in, /sign-up, /terms, /privacy vb. herkese açık
+// (Stripe: "Website must be accessible and not password-protected" gereksinimi)
 const isProtectedRoute = createRouteMatcher(["/urun(.*)"]);
 
 export default clerkMiddleware(async (auth, req) => {
