@@ -40,6 +40,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.4,
     },
     {
+      url: fullUrl("/commerce-disclosure"),
+      lastModified: new Date(),
+      changeFrequency: "yearly",
+      priority: 0.3,
+    },
+    {
       url: fullUrl("/urun"),
       lastModified: new Date(),
       changeFrequency: "weekly",

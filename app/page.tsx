@@ -581,11 +581,19 @@ export default function Home() {
           </Link>
         </nav>
 
-        <footer className="mt-12 text-center text-sm text-[var(--text-muted)] space-y-2">
+        <footer className="mt-12 text-center text-sm text-[var(--text-muted)] space-y-4">
           <p>{t("home.footer")}</p>
           <p className="text-xs text-[var(--text-muted)]">
             Subscriptions renew automatically each billing period unless cancelled. You can cancel
             anytime from your account settings.
+          </p>
+          <p>
+            <Link
+              href="/commerce-disclosure"
+              className="text-[var(--primary)] hover:underline"
+            >
+              {t("commerce.title")}
+            </Link>
           </p>
         </footer>
       </div>
