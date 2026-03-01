@@ -102,8 +102,9 @@ const jsonLd = {
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const clerkJSUrl = process.env.NEXT_PUBLIC_CLERK_JS_URL;
   return (
-    <ClerkProvider>
+    <ClerkProvider {...(clerkJSUrl ? { clerkJSUrl } : {})}>
       <html lang="en" className={`${dmSans.variable} ${cormorant.variable}`}>
         <body className="min-h-screen font-sans antialiased bg-[var(--bg)] text-[var(--text)]">
           <script
