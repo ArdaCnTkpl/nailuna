@@ -1,7 +1,18 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
-// Sadece /urun korumalı. Anasayfa (/), /sign-in, /sign-up, /terms, /privacy vb. herkese açık
-// (Stripe: "Website must be accessible and not password-protected" gereksinimi)
+// Public routes: auth ve marketing/legal (Stripe: site şifresiz erişilebilir olmalı)
+const isPublicRoute = createRouteMatcher([
+  "/",
+  "/sign-in(.*)",
+  "/sign-up(.*)",
+  "/pricing",
+  "/privacy",
+  "/terms",
+  "/contact",
+  "/commerce-disclosure",
+]);
+
+// Sadece /urun korumalı; yukarıdakiler herkese açık
 const isProtectedRoute = createRouteMatcher(["/urun(.*)"]);
 
 export default clerkMiddleware(async (auth, req) => {

@@ -269,3 +269,46 @@ body {
 [class*="userButtonPopoverFooter"] {
   display: none !important;
 }
+
+/* Clerk sign-in/sign-up: production'da Clerk CSS yüklenmezse kartın görünür olması için fallback */
+.cl-rootBox,
+[class*="cl-signIn-root"],
+[class*="cl-signUp-root"] {
+  width: 100%;
+  min-height: 1px;
+}
+.cl-cardBox,
+.cl-card,
+[class*="cl-signIn-start"],
+[class*="cl-signUp-start"] {
+  background-color: #ffffff !important;
+  color: #27151e !important;
+  box-shadow: 0 16px 40px rgba(30, 12, 24, 0.14);
+  border-radius: 0.9rem;
+  border: 1px solid rgba(198, 113, 138, 0.24);
+}
+.cl-headerTitle,
+.cl-headerSubtitle,
+[class*="cl-header"] {
+  color: #27151e !important;
+}
+.cl-formFieldLabel,
+.cl-formFieldInput,
+[class*="cl-formButtonPrimary"] {
+  color: #27151e !important;
+}
+.cl-formFieldInput::placeholder {
+  color: #8c6a7c;
+}
+.cl-dividerLine {
+  background-color: rgba(198, 113, 138, 0.24);
+}
+.cl-formButtonPrimary {
+  background-color: #c6718a !important;
+  color: #fdf5f8 !important;
+}
+.cl-socialButtonsBlockButton {
+  background-color: #ffffff !important;
+  color: #27151e !important;
+  border: 1px solid rgba(198, 113, 138, 0.24);
+}
