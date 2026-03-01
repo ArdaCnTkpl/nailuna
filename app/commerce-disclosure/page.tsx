@@ -3,6 +3,22 @@
 import Link from "next/link";
 import { useLanguage } from "../context/LanguageContext";
 
+const COMMERCE_ITEMS: { labelKey: string; valueKey: string; isEmail?: boolean; isPricingLink?: boolean }[] = [
+  { labelKey: "commerce.legalNameLabel", valueKey: "commerce.legalNameValue" },
+  { labelKey: "commerce.addressLabel", valueKey: "commerce.addressValue" },
+  { labelKey: "commerce.phoneLabel", valueKey: "commerce.phoneValue" },
+  { labelKey: "commerce.emailLabel", valueKey: "commerce.emailValue", isEmail: true },
+  { labelKey: "commerce.operatorLabel", valueKey: "commerce.operatorValue" },
+  { labelKey: "commerce.pricingLabel", valueKey: "commerce.pricingValue", isPricingLink: true },
+  { labelKey: "commerce.additionalFeesLabel", valueKey: "commerce.additionalFeesValue" },
+  { labelKey: "commerce.returnsByCustomerLabel", valueKey: "commerce.returnsByCustomerValue" },
+  { labelKey: "commerce.returnsDefectiveLabel", valueKey: "commerce.returnsDefectiveValue" },
+  { labelKey: "commerce.serviceDeliveryLabel", valueKey: "commerce.serviceDeliveryValue" },
+  { labelKey: "commerce.paymentMethodsLabel", valueKey: "commerce.paymentMethodsValue" },
+  { labelKey: "commerce.paymentTimingLabel", valueKey: "commerce.paymentTimingValue" },
+  { labelKey: "commerce.recommendedEnvLabel", valueKey: "commerce.recommendedEnvValue" },
+];
+
 export default function CommerceDisclosurePage() {
   const { t } = useLanguage();
 
@@ -22,59 +38,27 @@ export default function CommerceDisclosurePage() {
         </header>
 
         <dl className="space-y-5 text-sm text-[var(--text-muted)]">
-          <div>
-            <dt className="font-medium text-[var(--text)]">{t("commerce.merchantLabel")}</dt>
-            <dd className="mt-1">{t("commerce.merchantValue")}</dd>
-          </div>
-          <div>
-            <dt className="font-medium text-[var(--text)]">{t("commerce.operatorLabel")}</dt>
-            <dd className="mt-1">{t("commerce.operatorValue")}</dd>
-          </div>
-          <div>
-            <dt className="font-medium text-[var(--text)]">{t("commerce.addressLabel")}</dt>
-            <dd className="mt-1">{t("commerce.addressValue")}</dd>
-          </div>
-          <div>
-            <dt className="font-medium text-[var(--text)]">{t("commerce.emailLabel")}</dt>
-            <dd className="mt-1">
-              <a href="mailto:support@nailuna.app" className="text-[var(--primary)] hover:underline">
-                {t("commerce.emailValue")}
-              </a>
-            </dd>
-          </div>
-          <div>
-            <dt className="font-medium text-[var(--text)]">{t("commerce.pricingLabel")}</dt>
-            <dd className="mt-1">
-              {t("commerce.pricingValue")}{" "}
-              <Link href="/pricing" className="text-[var(--primary)] hover:underline">
-                {t("commerce.pricingUrl")}
-              </Link>
-            </dd>
-          </div>
-          <div>
-            <dt className="font-medium text-[var(--text)]">{t("commerce.additionalFeesLabel")}</dt>
-            <dd className="mt-1">{t("commerce.additionalFeesValue")}</dd>
-          </div>
-          <div>
-            <dt className="font-medium text-[var(--text)]">{t("commerce.paymentMethodsLabel")}</dt>
-            <dd className="mt-1">{t("commerce.paymentMethodsValue")}</dd>
-          </div>
-          <div>
-            <dt className="font-medium text-[var(--text)]">{t("commerce.paymentTimingLabel")}</dt>
-            <dd className="mt-1">{t("commerce.paymentTimingValue")}</dd>
-          </div>
-          <div>
-            <dt className="font-medium text-[var(--text)]">{t("commerce.serviceDeliveryLabel")}</dt>
-            <dd className="mt-1">{t("commerce.serviceDeliveryValue")}</dd>
-          </div>
-          <div>
-            <dt className="font-medium text-[var(--text)]">{t("commerce.cancellationsLabel")}</dt>
-            <dd className="mt-1">{t("commerce.cancellationsValue")}</dd>
-          </div>
-          <div>
-            <dt className="font-medium text-[var(--text)]">{t("commerce.recommendedEnvLabel")}</dt>
-            <dd className="mt-1">{t("commerce.recommendedEnvValue")}</dd>
-          </div>
+          {COMMERCE_ITEMS.map(({ labelKey, valueKey, isEmail, isPricingLink }) => (
+            <div key={labelKey}>
+              <dt className="font-medium text-[var(--text)]">{t(labelKey)}</dt>
+              <dd className="mt-1">
+                {isEmail ? (
+                  <a href="mailto:ardacan.tekkupeli@gmail.com" className="text-[var(--primary)] hover:underline">
+                    {t(valueKey)}
+                  </a>
+                ) : isPricingLink ? (
+                  <>
+                    {t(valueKey)}{" "}
+                    <Link href="/pricing" className="text-[var(--primary)] hover:underline">
+                      {t("commerce.pricingUrl")}
+                    </Link>
+                  </>
+                ) : (
+                  t(valueKey)
+                )}
+              </dd>
+            </div>
+          ))}
         </dl>
       </div>
     </main>
