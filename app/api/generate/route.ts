@@ -3,7 +3,7 @@ import { auth } from "@clerk/nextjs/server";
 import OpenAI from "openai";
 import sharp from "sharp";
 import { getOrCreateUser } from "../../../lib/getOrCreateUser";
-import { consumeOneCredit } from "../../../lib/credits";
+import { consumeOneCredit, addCredits } from "../../../lib/credits";
 
 const IMAGE_MODEL = "gpt-image-1.5";
 const VISION_MODEL = "gpt-4o-mini";
@@ -61,6 +61,7 @@ function isAllowedImageFile(file: File): boolean {
 }
 
 export async function POST(request: NextRequest) {
+  let consumedUser: { id: string } | null = null;
   try {
     const { userId } = await auth();
 
@@ -123,10 +124,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Kullanıcı kaydı oluştur (yoksa) ve 1 kredi tüket
+    // Kullanıcı kaydı oluştur (yoksa) ve 1 kredi tüket (hata durumunda iade edeceğiz)
     await getOrCreateUser(userId);
     try {
-      await consumeOneCredit(userId);
+      const user = await consumeOneCredit(userId);
+      consumedUser = { id: user.id };
     } catch (e) {
       const err = e as any;
       if (
@@ -143,6 +145,13 @@ export async function POST(request: NextRequest) {
 
     const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
+      if (consumedUser) {
+        try {
+          await addCredits(consumedUser.id, 1, "refund_failed_generation");
+        } catch (refundErr) {
+          console.error("Refund failed:", refundErr);
+        }
+      }
       return NextResponse.json(
         { error: "OPENAI_API_KEY tanımlı değil." },
         { status: 500 }
@@ -201,11 +210,16 @@ NAILS: ${prompt}. Photorealistic nails, same hand pose and lighting as original.
       );
     }
 
-    const imageBlob = new Blob([await image.arrayBuffer()], {
-      type: image.type || "image/png",
-    });
-    const imageFile = new File([imageBlob], image.name || "image.png", {
-      type: image.type || "image/png",
+    // EXIF orientation uygula; telefon fotoğraflarında mask boyut uyumsuzluğunu önler
+    const imageBuffer = Buffer.from(await image.arrayBuffer());
+    const normalizedBuffer = await sharp(imageBuffer, { autoOrient: true })
+      .toBuffer();
+    const imageMeta = await sharp(normalizedBuffer).metadata();
+    const imgW = imageMeta.width ?? 1024;
+    const imgH = imageMeta.height ?? 1024;
+
+    const imageFile = new File([new Uint8Array(normalizedBuffer)], image.name || "image.png", {
+      type: "image/png",
     });
 
     const opts: Parameters<typeof openai.images.edit>[0] = {
@@ -217,29 +231,39 @@ NAILS: ${prompt}. Photorealistic nails, same hand pose and lighting as original.
     };
 
     if (mask && mask.size > 0) {
-      const imageMeta = await sharp(
-        Buffer.from(await image.arrayBuffer())
-      ).metadata();
-      const imgW = imageMeta.width ?? 1024;
-      const imgH = imageMeta.height ?? 1024;
       const maskBuffer = Buffer.from(await mask.arrayBuffer());
-      const maskMeta = await sharp(maskBuffer).metadata();
-      const resizedMask =
-        maskMeta.width !== imgW || maskMeta.height !== imgH
-          ? await sharp(maskBuffer)
-              .resize(imgW, imgH, { fit: "fill" })
-              .png()
-              .toBuffer()
-          : maskBuffer;
+      const resizedMask = await sharp(maskBuffer)
+        .resize(imgW, imgH, { fit: "fill" })
+        .png()
+        .toBuffer();
       opts.mask = new File([new Uint8Array(resizedMask)], "mask.png", {
         type: "image/png",
       });
     }
 
-    const result = await openai.images.edit(opts);
+    let result;
+    try {
+      result = await openai.images.edit(opts);
+    } catch (openaiError) {
+      if (consumedUser) {
+        try {
+          await addCredits(consumedUser.id, 1, "refund_failed_generation");
+        } catch (refundErr) {
+          console.error("Refund failed:", refundErr);
+        }
+      }
+      throw openaiError;
+    }
     const first = result.data?.[0];
 
     if (!first || !("b64_json" in first) || !first.b64_json) {
+      if (consumedUser) {
+        try {
+          await addCredits(consumedUser.id, 1, "refund_failed_generation");
+        } catch (refundErr) {
+          console.error("Refund failed:", refundErr);
+        }
+      }
       return NextResponse.json(
         { error: "AI görsel üretemedi." },
         { status: 502 }
@@ -251,6 +275,13 @@ NAILS: ${prompt}. Photorealistic nails, same hand pose and lighting as original.
     });
   } catch (e) {
     console.error("Generate error:", e);
+    if (consumedUser) {
+      try {
+        await addCredits(consumedUser.id, 1, "refund_failed_generation");
+      } catch (refundErr) {
+        console.error("Refund failed:", refundErr);
+      }
+    }
     const message =
       e instanceof Error ? e.message : "İstek işlenirken hata oluştu.";
     return NextResponse.json({ error: message }, { status: 500 });
