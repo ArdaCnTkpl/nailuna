@@ -17,13 +17,16 @@ For **local development** (`http://localhost:3000`), you can force Clerk to load
 
 1. In **`.env.local`** add:
    ```bash
-   NEXT_PUBLIC_CLERK_JS_URL=https://unpkg.com/@clerk/clerk-js@5/dist/clerk.browser.js
+   NEXT_PUBLIC_CLERK_JS_URL=https://cdn.jsdelivr.net/npm/@clerk/clerk-js@5/dist/clerk.browser.js
    ```
+   (jsDelivr is usually faster than unpkg; the app also preloads this script.)
 2. Restart the dev server (`npm run dev`).
 
 The app already passes this URL to `<ClerkProvider>` when set. Auth may still call your custom domain for the Frontend API; if those calls fail, use Option B or C.
 
 ### Option B: Remove custom domain (recommended for production)
+
+**Step-by-step (Turkish):** see [CLERK_KUSTOM_DOMAIN_KALDIRMA.md](./CLERK_KUSTOM_DOMAIN_KALDIRMA.md).
 
 1. Open [Clerk Dashboard](https://dashboard.clerk.com) → your application.
 2. Go to **Configure** → **Domains** (or **Paths** / **Settings** depending on UI).

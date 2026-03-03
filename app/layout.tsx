@@ -106,6 +106,11 @@ export default function RootLayout({
   return (
     <ClerkProvider {...(clerkJSUrl ? { clerkJSUrl } : {})}>
       <html lang="en" className={`${dmSans.variable} ${cormorant.variable}`}>
+        <head>
+          {clerkJSUrl && (
+            <link rel="preload" href={clerkJSUrl} as="script" />
+          )}
+        </head>
         <body className="min-h-screen font-sans antialiased bg-[var(--bg)] text-[var(--text)]">
           <script
             type="application/ld+json"
