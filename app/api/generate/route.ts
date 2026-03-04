@@ -200,7 +200,6 @@ NAILS: ${prompt}. Photorealistic nails, same hand pose and lighting as original.
       image: imageFile,
       prompt: editPrompt,
       n: 1,
-      quality: "standard",
     };
 
     if (mask && mask.size > 0) {
