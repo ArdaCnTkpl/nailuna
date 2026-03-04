@@ -334,9 +334,6 @@ export default function Home() {
                     $
                   </span>
                   9.99
-                  <span className="ml-1 align-baseline text-xs text-[var(--text-muted)]">
-                    / month
-                  </span>
                 </p>
                 <p className="mt-3 text-sm leading-relaxed text-[var(--text-muted)]">
                   {t("home.pricing.basicShortDesc")}
@@ -369,9 +366,6 @@ export default function Home() {
                         $
                       </span>
                       19.99
-                      <span className="ml-1 align-baseline text-xs text-[var(--text-muted)]">
-                        / month
-                      </span>
                     </p>
                     <p className="mt-3 text-sm leading-relaxed text-[var(--text-muted)]">
                       {t("home.pricing.proShortDesc")}
@@ -402,9 +396,6 @@ export default function Home() {
                     $
                   </span>
                   29.99
-                  <span className="ml-1 align-baseline text-xs text-[var(--text-muted)]">
-                    / month
-                  </span>
                 </p>
                 <p className="mt-3 text-sm leading-relaxed text-[var(--text-muted)]">
                   {t("home.pricing.studioShortDesc")}

@@ -6,7 +6,7 @@ import { getOrCreateUser } from "../../../lib/getOrCreateUser";
 import { consumeOneCredit, addCredits } from "../../../lib/credits";
 
 const IMAGE_MODEL = "gpt-image-1.5";
-const VISION_MODEL = "gpt-4o-mini";
+const MAX_EDIT_SIZE = 1024; // px – uzun kenar üst limiti (hız + maliyet)
 
 const WINDOW_MS = 60_000; // 1 dakika
 const USER_LIMIT = 5; // user başına 5 istek/dk
@@ -162,42 +162,15 @@ export async function POST(request: NextRequest) {
     let editPrompt: string;
 
     if (mode === "reference" && referenceImage && referenceImage.size > 0) {
-      // Referans fotoğrafı Vision ile tarif et, sonra edit prompt'una kullan
-
-      const refBuffer = await referenceImage.arrayBuffer();
-      const refB64 = Buffer.from(refBuffer).toString("base64");
-      const refMime = referenceImage.type || "image/png";
-
-      const visionRes = await openai.chat.completions.create({
-        model: VISION_MODEL,
-        max_tokens: 300,
-        messages: [
-          {
-            role: "user",
-            content: [
-              {
-                type: "text",
-                text: `Describe this nail design in one or two short sentences in English. Include: color(s), finish (glossy/matte/gel), shape (almond, square, etc.), and any patterns, art, or details. Be concise; this will be used as an image generation prompt.`,
-              },
-              {
-                type: "image_url",
-                image_url: {
-                  url: `data:${refMime};base64,${refB64}`,
-                },
-              },
-            ],
-          },
-        ],
-      });
-
-      const description =
-        visionRes.choices?.[0]?.message?.content?.trim() ||
-        "elegant nail design matching the reference";
       editPrompt = `CRITICAL: You MUST edit ONLY the transparent (masked) nail areas. The opaque areas of the mask are the original image—copy them EXACTLY with zero changes. Do not alter hand, skin, fingers, palm, wrist, background, lighting, shadows, or any pixel outside the mask. The final image must be the original photo with only the nails replaced.
 
-REFERENCE TRANSFER: Recreate the nails from the reference design as faithfully as possible on the masked nails of the user's hand. Copy the same colors, finish (glossy/matte/gel), shape and patterns from the reference. Do NOT invent a new design or style; just transfer the reference nails onto the user's hand.
+REFERENCE TRANSFER: Recreate the nails from the reference design as faithfully as possible on the masked nails of the user's hand. Copy the same colors, finish (glossy/matte/gel), shape and patterns from the reference. Do NOT invent a new design or style; just transfer the reference nails onto the user's hand.${
+        prompt
+          ? ` USER NOTES: ${prompt} (treat these only as a subtle tweak; keep the main design identical to the reference).`
+          : ""
+      }
 
-NAILS: ${description}.${prompt ? ` ${prompt} (only as a subtle tweak, keep the main design identical to the reference)` : ""} Photorealistic nails, same hand pose and lighting as original.`;
+Photorealistic nails, same hand pose and lighting as original.`;
     } else if (prompt) {
       editPrompt = `CRITICAL: You MUST edit ONLY the transparent (masked) nail areas. The opaque areas of the mask are the original image—copy them EXACTLY with zero changes. Do not alter hand, skin, fingers, palm, wrist, background, lighting, shadows, or any pixel outside the mask. The final image must be the original photo with only the nails replaced.
 
@@ -227,7 +200,7 @@ NAILS: ${prompt}. Photorealistic nails, same hand pose and lighting as original.
       image: imageFile,
       prompt: editPrompt,
       n: 1,
-      quality: "high",
+      quality: "standard",
     };
 
     if (mask && mask.size > 0) {
