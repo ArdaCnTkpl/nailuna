@@ -97,6 +97,34 @@ export default function Home() {
   const [pricingSlideIndex, setPricingSlideIndex] = useState(0);
   const howSliderRef = useRef<HTMLDivElement | null>(null);
   const [howSlideIndex, setHowSlideIndex] = useState(0);
+  const [checkoutLoading, setCheckoutLoading] = useState<null | "starter" | "creator" | "studio">(null);
+
+  async function startCheckout(plan: "starter" | "creator" | "studio") {
+    try {
+      setCheckoutLoading(plan);
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plan }),
+      });
+      if (!res.ok) {
+        console.error("Checkout failed", await res.text());
+        alert("Payment could not be started. Please try again.");
+        return;
+      }
+      const data = (await res.json()) as { url?: string; error?: string };
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        alert(data.error ?? "Payment could not be started. Please try again.");
+      }
+    } catch (e) {
+      console.error("Checkout error", e);
+      alert("Payment could not be started. Please try again.");
+    } finally {
+      setCheckoutLoading(null);
+    }
+  }
 
   return (
     <main className="min-h-screen overflow-x-hidden">
@@ -344,8 +372,12 @@ export default function Home() {
                   <li>{t("home.pricing.basicFeature3")}</li>
                   <li>{t("home.pricing.basicFeature4")}</li>
                 </ul>
-                <button className="mt-6 inline-flex min-h-12 w-full items-center justify-center rounded-full border border-[var(--border)] bg-[var(--bg)] px-4 py-3 text-sm font-medium text-[var(--text)] transition hover:border-[var(--primary)] hover:text-[var(--primary)] sm:min-h-0 sm:py-2.5">
-                  {t("home.pricing.basicCta")}
+                <button
+                  className="mt-6 inline-flex min-h-12 w-full items-center justify-center rounded-full border border-[var(--border)] bg-[var(--bg)] px-4 py-3 text-sm font-medium text-[var(--text)] transition hover:border-[var(--primary)] hover:text-[var(--primary)] disabled:cursor-not-allowed disabled:opacity-60 sm:min-h-0 sm:py-2.5"
+                  onClick={() => startCheckout("starter")}
+                  disabled={!!checkoutLoading}
+                >
+                  {checkoutLoading === "starter" ? t("home.generating") ?? "Processing…" : t("home.pricing.basicCta")}
                 </button>
                 </div>
               </div>
@@ -377,8 +409,12 @@ export default function Home() {
                       <li>{t("home.pricing.proFeature4")}</li>
                       <li>{t("home.pricing.proFeature5")}</li>
                     </ul>
-                    <button className="btn-primary mt-6 inline-flex min-h-12 w-full items-center justify-center rounded-full px-4 py-3 text-sm font-medium shadow-[var(--shadow-sm)] sm:min-h-0 sm:py-2.5">
-                      {t("home.pricing.proCta")}
+                    <button
+                      className="btn-primary mt-6 inline-flex min-h-12 w-full items-center justify-center rounded-full px-4 py-3 text-sm font-medium shadow-[var(--shadow-sm)] disabled:cursor-not-allowed disabled:opacity-70 sm:min-h-0 sm:py-2.5"
+                      onClick={() => startCheckout("creator")}
+                      disabled={!!checkoutLoading}
+                    >
+                      {checkoutLoading === "creator" ? t("home.generating") ?? "Processing…" : t("home.pricing.proCta")}
                     </button>
                   </div>
                 </div>
@@ -407,8 +443,12 @@ export default function Home() {
                   <li>{t("home.pricing.studioFeature4")}</li>
                   <li>{t("home.pricing.studioFeature5")}</li>
                 </ul>
-                <button className="mt-6 inline-flex min-h-12 w-full items-center justify-center rounded-full border border-[var(--border)] bg-[var(--bg)] px-4 py-3 text-sm font-medium text-[var(--text)] transition hover:border-[var(--primary)] hover:text-[var(--primary)] sm:min-h-0 sm:py-2.5">
-                  {t("home.pricing.studioCta")}
+                <button
+                  className="mt-6 inline-flex min-h-12 w-full items-center justify-center rounded-full border border-[var(--border)] bg-[var(--bg)] px-4 py-3 text-sm font-medium text-[var(--text)] transition hover:border-[var(--primary)] hover:text-[var(--primary)] disabled:cursor-not-allowed disabled:opacity-60 sm:min-h-0 sm:py-2.5"
+                  onClick={() => startCheckout("studio")}
+                  disabled={!!checkoutLoading}
+                >
+                  {checkoutLoading === "studio" ? t("home.generating") ?? "Processing…" : t("home.pricing.studioCta")}
                 </button>
                 </div>
               </div>
