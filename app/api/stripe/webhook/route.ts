@@ -51,10 +51,13 @@ export async function POST(req: NextRequest) {
           await addCredits(user.id, creditsToAdd, `stripe_${plan}_checkout`);
           const stripeCustomerId = session.customer as string | undefined;
           if (stripeCustomerId) {
-            await supabaseAdmin
+            const { error: updateErr } = await supabaseAdmin
               .from("users")
               .update({ stripe_customer_id: stripeCustomerId })
               .eq("clerk_id", clerkId);
+            if (updateErr) {
+              console.error("Webhook: failed to save stripe_customer_id:", updateErr);
+            }
           }
         }
       }

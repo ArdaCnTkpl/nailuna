@@ -110,14 +110,14 @@ export default function AppHeader() {
             )}
             <UserButton afterSignOutUrl="/">
               <UserButton.MenuItems>
-                <UserButton.Action
+                <UserButton.Link
                   label={t("nav.manageSubscription")}
                   labelIcon={
                     <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                     </svg>
                   }
-                  onClick={() => { window.location.href = "/api/stripe/portal"; }}
+                  href="/billing"
                 />
               </UserButton.MenuItems>
             </UserButton>
@@ -173,7 +173,7 @@ export default function AppHeader() {
               </Link>
             </SignedOut>
             <SignedIn>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center justify-center gap-3">
                 {credits !== null && (
                   <span className="inline-flex items-center gap-1 rounded-full border border-[var(--border)] bg-[var(--bg-card)] px-3 py-1 text-xs font-medium text-[var(--text-muted)]">
                     <span className="h-1.5 w-1.5 rounded-full bg-[var(--primary)]" aria-hidden />
@@ -182,14 +182,14 @@ export default function AppHeader() {
                 )}
                 <UserButton afterSignOutUrl="/">
                   <UserButton.MenuItems>
-                    <UserButton.Action
+                    <UserButton.Link
                       label={t("nav.manageSubscription")}
                       labelIcon={
                         <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                         </svg>
                       }
-                      onClick={() => { window.location.href = "/api/stripe/portal"; }}
+                      href="/billing"
                     />
                   </UserButton.MenuItems>
                 </UserButton>
