@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Cormorant_Garamond, DM_Sans } from "next/font/google";
 import { LanguageProvider } from "./context/LanguageContext";
@@ -120,6 +121,7 @@ export default function RootLayout({
             <AppHeader />
             {children}
           </LanguageProvider>
+          <Analytics />
         </body>
       </html>
     </ClerkProvider>
