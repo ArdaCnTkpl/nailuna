@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { BeforeAfterSlider } from "./components/BeforeAfterSlider";
 import { useLanguage } from "./context/LanguageContext";
 
@@ -108,6 +108,19 @@ export default function Home() {
         body: JSON.stringify({ plan }),
       });
       if (!res.ok) {
+        // 401 ise önce giriş sayfasına yönlendir
+        if (res.status === 401) {
+          if (typeof window !== "undefined") {
+            const origin = window.location.origin;
+            const params = new URLSearchParams(window.location.search);
+            params.set("plan", plan);
+            params.set("checkout", "1");
+            const target = `${origin}/?${params.toString()}`;
+            const redirect = encodeURIComponent(target);
+            window.location.href = `/sign-in?redirect_url=${redirect}`;
+          }
+          return;
+        }
         console.error("Checkout failed", await res.text());
         alert("Payment could not be started. Please try again.");
         return;
@@ -125,6 +138,21 @@ export default function Home() {
       setCheckoutLoading(null);
     }
   }
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const url = new URL(window.location.href);
+    const plan = url.searchParams.get("plan") as "starter" | "creator" | "studio" | null;
+    const shouldCheckout = url.searchParams.get("checkout") === "1";
+    if (!shouldCheckout || !plan) return;
+
+    // URL'den parametreleri temizle ki tekrar yüklemede loop olmasın
+    url.searchParams.delete("plan");
+    url.searchParams.delete("checkout");
+    window.history.replaceState(null, "", url.toString());
+
+    startCheckout(plan);
+  }, []);
 
   return (
     <main className="min-h-screen overflow-x-hidden">

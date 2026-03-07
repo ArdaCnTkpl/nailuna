@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { getOrCreateUser } from "../../../../lib/getOrCreateUser";
 import { addCredits } from "../../../../lib/credits";
+import { supabaseAdmin } from "../../../../lib/supabaseAdmin";
 
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -31,6 +32,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+    // İlk ödeme / her yenileme için kredi ver (subscription mode kullanıyoruz)
     if (event.type === "checkout.session.completed") {
       const session = event.data.object as Stripe.Checkout.Session;
       const plan = session.metadata?.plan as string | undefined;
@@ -47,6 +49,25 @@ export async function POST(req: NextRequest) {
         if (creditsToAdd > 0) {
           const user = await getOrCreateUser(clerkId);
           await addCredits(user.id, creditsToAdd, `stripe_${plan}_checkout`);
+        }
+      }
+    }
+
+    // Abonelik sona erdiğinde kullanıcı kredilerini sıfırla
+    if (event.type === "customer.subscription.deleted") {
+      const subscription = event.data.object as Stripe.Subscription;
+      const clerkId = (subscription.metadata?.clerkId as string | undefined) ?? null;
+
+      if (!clerkId) {
+        console.warn("Subscription deleted without clerkId metadata");
+      } else {
+        const { error } = await supabaseAdmin
+          .from("users")
+          .update({ credits_balance: 0 })
+          .eq("clerk_id", clerkId);
+
+        if (error) {
+          console.error("Failed to reset credits on subscription end:", error);
         }
       }
     }

@@ -43,7 +43,8 @@ export async function POST(req: NextRequest) {
 
   try {
     const session = await stripe.checkout.sessions.create({
-      mode: "payment",
+      // Prices are recurring, so use subscription mode
+      mode: "subscription",
       line_items: [
         {
           price: priceId,
@@ -54,12 +55,19 @@ export async function POST(req: NextRequest) {
       cancel_url: `${origin}/?checkout=cancelled`,
       client_reference_id: userId,
       metadata: { plan },
+      subscription_data: {
+        metadata: {
+          clerkId: userId,
+          plan,
+        },
+      },
     });
 
     return NextResponse.json({ url: session.url });
   } catch (e) {
     console.error("Stripe checkout error:", e);
-    return NextResponse.json({ error: "Stripe checkout failed" }, { status: 500 });
+    const message = e instanceof Error ? e.message : "Stripe checkout failed";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 
