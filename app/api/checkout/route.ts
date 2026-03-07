@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
   }
 
   const stripe = new Stripe(stripeSecretKey, {
-    apiVersion: "2024-06-20",
+    apiVersion: "2026-02-25.clover",
   });
 
   const origin =
