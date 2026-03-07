@@ -49,6 +49,13 @@ export async function POST(req: NextRequest) {
         if (creditsToAdd > 0) {
           const user = await getOrCreateUser(clerkId);
           await addCredits(user.id, creditsToAdd, `stripe_${plan}_checkout`);
+          const stripeCustomerId = session.customer as string | undefined;
+          if (stripeCustomerId) {
+            await supabaseAdmin
+              .from("users")
+              .update({ stripe_customer_id: stripeCustomerId })
+              .eq("clerk_id", clerkId);
+          }
         }
       }
     }

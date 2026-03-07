@@ -6,6 +6,7 @@ export type DbUser = {
   id: string;
   clerk_id: string;
   credits_balance: number;
+  stripe_customer_id?: string | null;
   created_at: string | null;
 };
 

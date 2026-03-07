@@ -17,6 +17,7 @@ export const translations: Record<
     "nav.reviews": "レビュー",
     "nav.beforeAfter": "ビフォー・アフター",
     "nav.signIn": "ログイン",
+    "nav.manageSubscription": "サブスクリプション管理",
 
     "signin.title": "ログイン",
     "signin.subtitle": "アカウントにログインしてください。",
@@ -242,6 +243,7 @@ export const translations: Record<
     "nav.reviews": "Reviews",
     "nav.beforeAfter": "Before & After",
     "nav.signIn": "Sign in",
+    "nav.manageSubscription": "Manage subscription",
 
     "signin.title": "Sign in",
     "signin.subtitle": "Sign in to your account.",

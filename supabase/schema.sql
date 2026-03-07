@@ -6,6 +6,9 @@ create table if not exists public.users (
   created_at timestamptz default now()
 );
 
+-- Stripe abonelik yönetimi (Customer Portal) için; checkout tamamlanınca webhook ile set edilir
+alter table public.users add column if not exists stripe_customer_id text;
+
 -- Kredi hareketlerini takip eden ledger
 create table if not exists public.credit_ledger (
   id uuid primary key default gen_random_uuid(),
