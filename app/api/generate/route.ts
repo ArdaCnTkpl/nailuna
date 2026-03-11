@@ -183,7 +183,7 @@ NAILS: ${prompt}. Photorealistic nails, same hand pose and lighting as original.
       );
     }
 
-    // EXIF orientation uygula; telefon fotoğraflarında mask boyut uyumsuzluğunu önler
+    // EXIF orientation uygula; telefon fotoğraflarında mask boyut uyumsuzluğunu önler (büyük görseller API’yi yavaşlatıyor)
     const imageBuffer = Buffer.from(await image.arrayBuffer());
     const normalizedBuffer = await sharp(imageBuffer, { autoOrient: true })
       .toBuffer();
